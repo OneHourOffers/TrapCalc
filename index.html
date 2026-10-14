@@ -188,6 +188,20 @@ input[type=number] { -moz-appearance: textfield; }
 .reno-grid.compact .row { grid-template-columns: minmax(0,1.4fr) 110px 110px; gap: 10px; }
 .reno-grid.compact .auto-field input { font-size: 12.5px; padding: 8px 8px; }
 
+/* Cosmetic tier segmented control (inline in the Cosmetic row label) */
+.row label.with-tier { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.tier-seg { display: inline-flex; border: 1px solid var(--border2); border-radius: 6px; overflow: hidden; background: var(--surface); }
+.tier-seg input { position: absolute; opacity: 0; pointer-events: none; }
+.row .tier-seg label { font-size: 10.5px; font-weight: 700; padding: 4px 8px; cursor: pointer; color: var(--text-sec); border-left: 1px solid var(--border); transition: all 0.12s; letter-spacing: 0.02em; line-height: 1.2; }
+.row .tier-seg label:first-of-type { border-left: none; }
+.row .tier-seg label:hover { background: var(--surface2); color: var(--accent); }
+.row .tier-seg input:checked + label { background: var(--accent); color: #fff; }
+
+/* Inline auto-feed checkbox on the Cash Deal Renovations label */
+.row .sync-inline { font-size: 13px; color: var(--text-sec); font-weight: 500; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.row label.sync-chip, .sync-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700; color: var(--accent); background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 5px; padding: 3px 7px; cursor: pointer; user-select: none; letter-spacing: 0.02em; }
+.sync-chip input { width: 13px; height: 13px; accent-color: var(--accent); cursor: pointer; margin: 0; }
+
 /* Auto-sync toggle */
 .sync-toggle { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 8px; margin-top: 12px; cursor: pointer; user-select: none; transition: background 0.15s; }
 .sync-toggle:hover { background: #dde9f5; }
@@ -314,7 +328,15 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
       </div>
       <div class="panel-body">
         <div class="row"><label>ARV</label><input type="text" inputmode="numeric" data-currency="true" id="c_arv" value="150000" /></div>
-        <div class="row"><label>Renovations</label><input type="text" inputmode="numeric" data-currency="true" id="c_reno" value="37000" /></div>
+        <div class="row">
+          <div class="sync-inline">Renovations
+            <label class="sync-chip" for="syncReno" title="When checked, Renovations is pulled from the Renovation Estimator total">
+              <input type="checkbox" id="syncReno" checked />
+              Auto from Estimator
+            </label>
+          </div>
+          <input type="text" inputmode="numeric" data-currency="true" id="c_reno" value="37000" />
+        </div>
         <div class="row">
           <label>Flipper Profit (½ Reno)</label>
           <div class="auto-field" id="c_profitWrap">
@@ -363,7 +385,16 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
       <div class="panel-body">
         <div class="reno-grid compact">
           <div class="row">
-            <label>Cosmetic (SqFt)</label>
+            <label class="with-tier">Cosmetic
+              <span class="tier-seg" id="r_tierSeg">
+                <input type="radio" name="r_tier" id="r_tierRental" value="rental" />
+                <label for="r_tierRental" id="r_tierRentalLbl">Rental</label>
+                <input type="radio" name="r_tier" id="r_tierFlip" value="flip" checked />
+                <label for="r_tierFlip" id="r_tierFlipLbl">Flip</label>
+                <input type="radio" name="r_tier" id="r_tierLux" value="luxury" />
+                <label for="r_tierLux" id="r_tierLuxLbl">Luxury</label>
+              </span>
+            </label>
             <input type="number" id="r_sqft" value="936" />
             <div class="auto-field" id="r_cosmeticWrap">
               <input type="text" inputmode="numeric" data-currency="true" data-auto="cosmetic" id="r_cosmetic" />
@@ -422,11 +453,6 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
         <div class="reno-total">
           <div class="lbl">Total Estimated Reno</div>
           <div class="val" id="r_total">$0</div>
-        </div>
-
-        <div class="sync-toggle" onclick="toggleSync(event)">
-          <input type="checkbox" id="syncReno" checked />
-          <label for="syncReno">Auto-feed total into Cash Deal Renovations <span class="arrow">→</span></label>
         </div>
       </div>
     </div>
@@ -495,7 +521,7 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
         </div>
 
         <div class="footnote" style="margin-top: 14px;">
-          <strong>Reno Logic:</strong> Cosmetic = $20,000 base + $10/sqft (1,001–2,500) + $15/sqft (&gt;2,500) ·
+          <strong>Reno Logic:</strong> Cosmetic = base + $/sqft (1,001–2,500) + $/sqft (&gt;2,500) — Rental $20k / $10 / $15 · Flip $30k / $13 / $20 · Luxury $40k / $20 / $30 ·
           Windows = $500 ea ·
           Roof Replace = min($30k, sqft × $10), Repair = 25% ·
           Plumbing Replace = min($40k, sqft × $17.50), Repair = 25% ·
@@ -654,7 +680,28 @@ const fmt = n => {
 };
 const fmt2 = n => isFinite(n) ? n.toFixed(2) : '—';
 
-function cosmetic(sqft) { return 20000 + 10 * Math.max(0, Math.min(sqft, 2500) - 1000) + 15 * Math.max(0, sqft - 2500); }
+// ============================================================
+// COSMETIC TIERS — each tier has its own base + $/sqft rates.
+//   cost = base + mid × (sqft between 1,001–2,500) + high × (sqft over 2,500)
+// Rental = baseline (builder-grade, durable finishes).
+// Flip   = retail-ready finishes.
+// Luxury = high-end finishes (quartz, tile showers, custom fixtures).
+// Edit the numbers here to retune every deal.
+// ============================================================
+const COSMETIC_TIERS = {
+  rental: { base: 20000, mid: 10, high: 15 },
+  flip:   { base: 30000, mid: 13, high: 20 },
+  luxury: { base: 40000, mid: 20, high: 30 },
+};
+function cosmeticFor(tier, sqft) {
+  const t = COSMETIC_TIERS[tier] || COSMETIC_TIERS.flip;
+  return t.base + t.mid * Math.max(0, Math.min(sqft, 2500) - 1000) + t.high * Math.max(0, sqft - 2500);
+}
+function currentTier() {
+  const el = document.querySelector('input[name="r_tier"]:checked');
+  return el ? el.value : 'flip';
+}
+function cosmetic(sqft) { return cosmeticFor(currentTier(), sqft); }
 function roofCost(sev, sqft) {
   if (sev === 'REDO') return Math.min(30000, sqft * 10);
   if (sev === 'Repair') return Math.min(30000, sqft * 10 * 0.25);
@@ -727,6 +774,11 @@ function recalc() {
   const effPl   = applyEditable(cPl,   'r_plumbOut');
   const effEl   = applyEditable(cEl,   'r_elecOut');
   const effHvac = applyEditable(cHvac, 'r_hvacOut');
+
+  // Hover a tier to see its cosmetic cost at the current sqft
+  $('r_tierRentalLbl').title = 'Rental: ' + fmt(cosmeticFor('rental', sqft));
+  $('r_tierFlipLbl').title   = 'Flip: '   + fmt(cosmeticFor('flip', sqft));
+  $('r_tierLuxLbl').title    = 'Luxury: ' + fmt(cosmeticFor('luxury', sqft));
 
   const totalReno = effCosm + effWin + effRoof + effPl + effEl + effHvac;
   $('r_total').textContent = fmt(totalReno);
@@ -1036,15 +1088,7 @@ function resetHardMoney() {
 // Apply locked state on initial load
 applyHardMoneyLockState();
 
-// Auto-sync toggle: when checkbox state changes, recalc immediately
-function toggleSync(e) {
-  // If user clicked on the wrapper but not the checkbox itself, flip the box
-  if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'LABEL') {
-    const cb = $('syncReno');
-    cb.checked = !cb.checked;
-  }
-  recalc();
-}
+// Auto-sync checkbox (on the Cash Deal Renovations line): recalc immediately on change
 // Also catch direct checkbox changes
 $('syncReno').addEventListener('change', recalc);
 
