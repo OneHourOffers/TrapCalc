@@ -78,6 +78,57 @@ button.action.primary:hover { background: #16334f; border-color: #16334f; }
 .panel-head.teal { background: var(--teal); }
 .panel-head.amber { background: var(--amber); }
 .panel-head.logo-teal { background: var(--logo-teal); }
+.panel-head.purple { background: var(--purple); }
+.panel-head.orange { background: var(--orange); }
+
+/* ============ TABS (OHO / 1HO) ============ */
+.tab-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px; margin-bottom: 22px; background: var(--surface3); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+.tab-btn { font-family: "Archivo", sans-serif; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 18px; background: transparent; border: 1px solid transparent; border-radius: var(--radius); cursor: pointer; text-align: left; color: var(--text-sec); transition: background 0.15s, color 0.15s; }
+.tab-btn:hover { background: rgba(255,255,255,0.55); color: var(--accent); }
+.tab-btn .tab-name { font-size: 17px; font-weight: 800; letter-spacing: 0.02em; line-height: 1.1; }
+.tab-btn .tab-desc { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; color: var(--text-muted); }
+.tab-btn[aria-selected="true"] { background: var(--surface); border-color: var(--border2); color: var(--accent); box-shadow: 0 1px 4px rgba(30,65,100,0.08); }
+.tab-btn[aria-selected="true"] .tab-name { color: var(--accent); }
+.tab-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tab-pane[hidden] { display: none; }
+/* Reno Estimator is one shared panel; it moves into whichever tab is active */
+.reno-slot { display: contents; }
+/* Paired panels fill the row height; each panel's result box sits at the bottom so the
+   Max Purchase / Need Deal At boxes and Total Estimated Reno line up across the row */
+.panels.pair > .panel, .panels.pair > .reno-slot > .panel { display: flex; flex-direction: column; }
+.panels.pair .panel-body { flex: 1; display: flex; flex-direction: column; }
+.panels.pair .panel-body > .hero-result, .panels.pair .panel-body > .hero-pair { margin-top: auto; }
+/* On OHO the reno box sits beside the Price Anchor / Need Deal At pair — match their size there */
+#renoSlot-oho .reno-hero { padding: 16px 18px; }
+#renoSlot-oho .reno-hero .hero-value { font-size: 26px; }
+#renoSlot-oho .reno-hero .hero-sub { margin-top: 10px; padding-top: 10px; font-size: 11px; }
+@media (max-width: 1000px) { #renoSlot-oho .reno-hero { padding: 14px 12px; } #renoSlot-oho .reno-hero .hero-value { font-size: 22px; } #renoSlot-oho .reno-hero .hero-sub { font-size: 10.5px; } }
+.panels.pair .panel-body > .reno-grid,
+.panels.pair .panel-body > .row:has(+ .hero-result),
+.panels.pair .panel-body > .row:has(+ .hero-pair) { margin-bottom: 20px; }
+@media print { .tab-bar { display: none; } }
+
+/* BRRRR pull-out table: Cash Pulled Out → Need to Buy For */
+.pull-table { margin-top: 14px; border: 1px solid var(--border2); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.pull-table .pull-head, .pull-table .pull-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center; padding: 8px 12px; }
+.pull-table .pull-head { background: var(--purple-dim); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--purple); }
+.pull-table .pull-head span:last-child { text-align: right; }
+.pull-table .pull-row { border-top: 1px solid var(--border); }
+.pull-table .pull-row input { font-family: "Archivo", sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); padding: 6px 10px; background: var(--surface); border: 1px solid var(--border2); border-radius: 6px; outline: none; width: 100%; text-align: right; }
+.pull-table .pull-row input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(30,65,100,0.08); }
+.pull-table .pull-row .pull-out { font-family: "Archivo", sans-serif; font-size: 15px; font-weight: 800; text-align: right; color: var(--text); }
+.pull-table .pull-row .pull-out.red { color: var(--red); }
+.s8-output .big.purple { color: var(--purple); }
+
+/* BRRRR & Rental Cashflow: BRRRR → Mortgage Payment → Cashflow */
+.quad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+@media (max-width: 1100px) { .quad-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 760px) { .quad-grid { grid-template-columns: 1fr; } }
+.quad-grid .row { grid-template-columns: 1fr 130px; }
+.loan-seg { justify-self: end; }
+.row .loan-seg label { font-size: 11px; padding: 6px 12px; }
+.mode-hint { font-size: 11px; color: var(--text-muted); padding: 2px 0 10px; border-bottom: 1px solid var(--border); }
+.mode-brrrr[hidden], .mode-manual[hidden] { display: none; }
 .panel-head .tag { font-family: "Archivo", sans-serif; font-size: 11px; font-weight: 500; opacity: 0.85; letter-spacing: 0.02em; text-transform: none; }
 .panel-body { padding: 20px 22px; }
 
@@ -99,7 +150,28 @@ button.action.primary:hover { background: #16334f; border-color: #16334f; }
 
 /* ============ DUAL GRID ============ */
 .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-@media (max-width: 1000px) { .panels { grid-template-columns: 1fr; } }
+@media (max-width: 1000px) { .panels:not(.pair) { grid-template-columns: 1fr; } }
+/* Wholesale/Flip + Reno Estimator stay side by side until the screen is phone-narrow */
+@media (max-width: 1000px) { .panels.pair { gap: 14px; } .panels.pair .panel-body { padding: 16px 14px; } .panels.pair .row { grid-template-columns: 1fr 120px; gap: 8px; } .panels.pair .reno-grid.compact .row { grid-template-columns: minmax(0,1fr) 84px 96px; gap: 6px; } .panels.pair .reno-grid.compact .row:has(.hvac-cell) { grid-template-columns: minmax(0,1fr) 120px 96px; } .panels.pair .hero-pair { gap: 8px; } .panels.pair .hero-pair .hero-result { padding: 14px 12px; } .panels.pair .hero-pair .hero-value { font-size: 22px; } .panels.pair .hero-footnote { font-size: 10.5px; }
+  /* Cosmetic row: title on its own line, then [Rental|Flip|Luxury] [sqft] [$] on one line */
+  .panels.pair .reno-grid.compact .row:has(.with-tier) { row-gap: 6px; }
+  .panels.pair .reno-grid.compact .row label.with-tier { display: contents; }
+  .panels.pair .reno-grid.compact .row .tier-title { grid-column: 1 / -1; grid-row: 1; }
+  .panels.pair .reno-grid.compact .row .tier-seg { grid-column: 1; grid-row: 2; justify-self: start; }
+  .panels.pair .reno-grid.compact .row .tier-seg label { padding: 6px 5px; font-size: 10px; letter-spacing: 0; }
+  .panels.pair .reno-grid.compact .row:has(.with-tier) > .unit-wrap { grid-column: 2; grid-row: 2; }
+  .panels.pair .reno-grid.compact .row:has(.with-tier) > .auto-field { grid-column: 3; grid-row: 2; }
+  .panels.pair .reno-grid.compact .row select { font-size: 12px; padding: 8px 4px 8px 6px; }
+  .panels.pair .reno-total { padding: 14px 16px; gap: 10px; }
+  .panels.pair .reno-total .lbl { font-size: 11px; letter-spacing: 0.08em; }
+  .panels.pair .reno-total .val { font-size: 20px; }
+  .panels.pair .allin-total { padding: 14px 16px; gap: 10px; }
+  .panels.pair .allin-total .lbl { font-size: 11px; letter-spacing: 0.08em; }
+  .panels.pair .allin-total .val { font-size: 20px; white-space: nowrap; }
+  .panels.pair .panel-head { padding: 12px 14px; }
+  .panels.pair .panel-head-controls { gap: 5px; flex-shrink: 0; }
+  .panels.pair .panel-head-controls .hm-control { white-space: nowrap; padding: 5px 7px; font-size: 10.5px; } }
+@media (max-width: 720px) { .panels.pair { grid-template-columns: 1fr; } }
 
 /* ============ ROWS ============ */
 .row { display: grid; grid-template-columns: 1fr 150px; gap: 14px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
@@ -136,7 +208,7 @@ input[type=number] { -moz-appearance: textfield; }
 .hero-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
 .hero-pair .hero-result { margin-top: 0; padding: 16px 18px; }
 .hero-pair .hero-value { font-size: 26px; }
-@media (max-width: 600px) { .hero-pair { grid-template-columns: 1fr; } }
+@media (max-width: 420px) { .hero-pair { grid-template-columns: 1fr; } }
 
 /* Teal variant — green, signals "qualifies / negotiable headroom" */
 .hero-result.teal-variant { background: var(--teal-dim); border-color: rgba(30,138,110,0.35); border-left-color: var(--teal); }
@@ -187,6 +259,11 @@ input[type=number] { -moz-appearance: textfield; }
 .reno-grid.compact { grid-template-columns: 1fr; }
 .reno-grid.compact .row { grid-template-columns: minmax(0,1.4fr) 110px 110px; gap: 10px; }
 .reno-grid.compact .auto-field input { font-size: 12.5px; padding: 8px 8px; }
+
+/* Small unit label inside an input (e.g. "SqFt" in the reno square footage box) */
+.unit-wrap { position: relative; display: block; min-width: 0; }
+.unit-wrap input { width: 100%; padding-left: 34px !important; }
+.unit-wrap::before { content: attr(data-unit); position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-family: "Archivo", sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: 0.04em; color: var(--text-muted); pointer-events: none; }
 
 /* Cosmetic tier segmented control (inline in the Cosmetic row label) */
 .row label.with-tier { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
@@ -319,11 +396,21 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
     </div>
   </div>
 
-  <div class="panels">
+  <nav class="tab-bar" role="tablist" aria-label="Calculator">
+    <button type="button" class="tab-btn" role="tab" id="tabBtn-oho" data-tab="oho" aria-controls="tab-oho">
+      <span class="tab-name">OHO</span><span class="tab-desc">Wholesale · Novation</span>
+    </button>
+    <button type="button" class="tab-btn" role="tab" id="tabBtn-1ho" data-tab="1ho" aria-controls="tab-1ho">
+      <span class="tab-name">1HO</span><span class="tab-desc">Flip · BRRRR</span>
+    </button>
+  </nav>
+
+  <section class="tab-pane" id="tab-oho" role="tabpanel" aria-labelledby="tabBtn-oho">
+  <div class="panels pair">
 
     <div class="panel">
       <div class="panel-head">
-        <h2>Cash Deal</h2>
+        <h2>Wholesale</h2>
         <span class="tag">Main Strategy</span>
       </div>
       <div class="panel-body">
@@ -363,7 +450,7 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
             <div class="hero-label">Price Anchor</div>
             <div class="hero-value" id="c_anchor">$0</div>
             <div class="hero-footnote" style="border-top-color: rgba(217,96,26,0.35);">
-              <span>92.5% of Need Deal At</span>
+              <span>85% of Need Deal At</span>
             </div>
           </div>
           <div class="hero-result teal-variant">
@@ -377,6 +464,7 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
       </div>
     </div>
 
+    <div class="reno-slot" id="renoSlot-oho">
     <div class="panel">
       <div class="panel-head amber">
         <h2>Renovation Estimator</h2>
@@ -385,7 +473,7 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
       <div class="panel-body">
         <div class="reno-grid compact">
           <div class="row">
-            <label class="with-tier">Cosmetic
+            <label class="with-tier"><span class="tier-title">Cosmetic</span>
               <span class="tier-seg" id="r_tierSeg">
                 <input type="radio" name="r_tier" id="r_tierRental" value="rental" />
                 <label for="r_tierRental" id="r_tierRentalLbl">Rental</label>
@@ -395,7 +483,7 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
                 <label for="r_tierLux" id="r_tierLuxLbl">Luxury</label>
               </span>
             </label>
-            <input type="number" id="r_sqft" value="936" />
+            <span class="unit-wrap" data-unit="SqFt"><input type="number" id="r_sqft" value="936" /></span>
             <div class="auto-field" id="r_cosmeticWrap">
               <input type="text" inputmode="numeric" data-currency="true" data-auto="cosmetic" id="r_cosmetic" />
               <button type="button" class="revert-btn" data-revert="r_cosmetic" title="Revert to formula">⟲</button>
@@ -450,16 +538,21 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
           </div>
         </div>
 
-        <div class="reno-total">
-          <div class="lbl">Total Estimated Reno</div>
-          <div class="val" id="r_total">$0</div>
+        <div class="hero-result teal-variant reno-hero">
+          <div class="hero-label">Total Estimated Reno</div>
+          <div class="hero-value" id="r_total">$0</div>
+          <div class="hero-sub" style="border-top-color: rgba(30,138,110,0.35);">
+            <span>Finish <strong id="r_tierDisp">Flip</strong></span>
+            <span>Square Feet <strong id="r_sqftDisp">0</strong></span>
+          </div>
         </div>
       </div>
+    </div>
     </div>
 
   </div>
 
-  <div class="panels" style="margin-top: 22px;">
+  <div class="panels pair" style="margin-top: 22px;">
 
     <div class="panel">
       <div class="panel-head teal">
@@ -531,74 +624,141 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
     </div>
 
   </div>
+  </section>
+
+  <section class="tab-pane" id="tab-1ho" role="tabpanel" aria-labelledby="tabBtn-1ho" hidden>
+  <div class="panels pair">
+
+    <div class="panel">
+      <div class="panel-head orange">
+        <h2>Flip</h2>
+        <span class="tag">Buy · Rehab · Resell</span>
+      </div>
+      <div class="panel-body">
+        <div class="row"><label>ARV</label><input type="text" inputmode="numeric" data-currency="true" id="f_arv" value="150000" /></div>
+        <div class="row"><label>Profit Target 💰</label><input type="text" inputmode="numeric" data-currency="true" id="f_profit" value="40000" /></div>
+        <div class="row">
+          <div class="sync-inline">Renovations
+            <label class="sync-chip" for="f_syncReno" title="When checked, Renovations is pulled from the Renovation Estimator total">
+              <input type="checkbox" id="f_syncReno" />
+              Auto from Estimator
+            </label>
+          </div>
+          <input type="text" inputmode="numeric" data-currency="true" id="f_reno" value="60000" />
+        </div>
+        <div class="row">
+          <label class="with-mini">
+            Agent Fees
+            <span class="mini-pct">
+              <input type="text" inputmode="decimal" id="f_commPct" value="6" />
+              <span class="pct-sign">%</span>
+            </span>
+          </label>
+          <div class="calc-out" id="f_commDollar">$0</div>
+        </div>
+        <div class="row"><label>Buyer Repairs</label><input type="text" inputmode="numeric" data-currency="true" id="f_repairs" value="5000" /></div>
+        <div class="row"><label>Concessions</label><input type="text" inputmode="numeric" data-currency="true" id="f_concess" value="5000" /></div>
+        <div class="row"><label>Closing Costs</label><input type="text" inputmode="numeric" data-currency="true" id="f_closing" value="5000" /></div>
+        <div class="row"><label>Holding Costs</label><input type="text" inputmode="numeric" data-currency="true" id="f_holding" value="10000" /></div>
+
+        <div class="hero-result orange-variant">
+          <div class="hero-label">Max Purchase</div>
+          <div class="hero-value" id="f_maxPurchase">$0</div>
+          <div class="hero-sub" style="border-top-color: rgba(217,96,26,0.35);">
+            <span>Profit Target <strong id="f_profitDisp">$0</strong></span>
+            <span>Total Costs <strong id="f_costs">$0</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reno-slot" id="renoSlot-1ho"></div>
+
+  </div>
 
   <div class="panel full-panel">
-    <div class="panel-head logo-teal">
-      <h2>Rental Cashflow Underwriting</h2>
-      <span class="tag">Cash Flow Analysis</span>
+    <div class="panel-head purple">
+      <h2>BRRRR &amp; Rental Cashflow</h2>
+      <span class="tag">Buy · Rehab · Rent · Refi · Repeat</span>
     </div>
     <div class="panel-body">
-      <div class="s8-grid">
+      <div class="quad-grid">
 
         <div class="s8-block">
-          <h3>Rent Calculator</h3>
-          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Housing Authority</label>
-            <select id="s8_authority">
-              <option value="CMHA">CMHA</option>
-              <option value="manual">Manual Override</option>
-            </select>
+          <h3 style="color: var(--purple);">BRRRR</h3>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>ARV</label><input type="text" inputmode="numeric" data-currency="true" id="b_arv" value="135000" /></div>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Refi Down Payment</label><div class="pct-input-wrap"><input type="number" id="b_dp" value="25" step="1" /></div></div>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Max Loan</label><div class="calc-out" id="b_maxLoan">$0</div></div>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Lending Fees</label><input type="text" inputmode="numeric" data-currency="true" id="b_fees" value="7500" /></div>
+          <div class="row" style="grid-template-columns: 1fr 130px;">
+            <div class="sync-inline">Renovations
+              <label class="sync-chip" for="b_syncReno" title="When checked, Renovations is pulled from the Renovation Estimator total">
+                <input type="checkbox" id="b_syncReno" />
+                Auto
+              </label>
+            </div>
+            <input type="text" inputmode="numeric" data-currency="true" id="b_reno" value="45000" />
           </div>
-          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Zip Code</label><input type="text" id="s8_zip" value="44102" maxlength="5" /></div>
-          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Bedrooms</label>
-            <select id="s8_beds">
-              <option value="0">Studio</option><option value="1">1 BR</option><option value="2">2 BR</option>
-              <option value="3" selected>3 BR</option><option value="4">4 BR</option><option value="5">5 BR</option>
-              <option value="6">6 BR</option><option value="7">7 BR</option><option value="8">8 BR</option><option value="9">9 BR</option>
-            </select>
-          </div>
-          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Manual Rent $</label><input type="text" inputmode="numeric" data-currency="true" id="s8_manualRent" value="0" /></div>
 
           <div class="s8-output">
-            <div class="big" id="s8_rent">$0</div>
-            <div class="sub">Monthly Rent · <span id="s8_rentSource" style="text-transform:none; letter-spacing:0.02em; font-weight:600; color:var(--text-sec);">—</span></div>
+            <div class="big purple" id="b_maxPurchase">$0</div>
+            <div class="sub">Max Purchase · Max Loan − Fees − Reno</div>
           </div>
-          <div id="s8_dataNote" class="footnote" style="margin-top: 10px;"></div>
-          <a class="ext-link" href="https://www.zillow.com/rental-manager/price-my-rental/" target="_blank" rel="noopener noreferrer">
-            <span class="ext-link-label"><span class="ext-link-icon">🏘</span>Compare to Zillow Market Rent</span>
-            <span class="ext-link-arrow">↗</span>
-          </a>
+
+          <div class="pull-table">
+            <div class="pull-head"><span>Cash Pulled Out</span><span>Need to Buy For</span></div>
+            <div class="pull-row"><input type="text" inputmode="numeric" data-currency="true" id="b_pull1" value="5000" /><span class="pull-out" id="b_buy1">$0</span></div>
+            <div class="pull-row"><input type="text" inputmode="numeric" data-currency="true" id="b_pull2" value="10000" /><span class="pull-out" id="b_buy2">$0</span></div>
+            <div class="pull-row"><input type="text" inputmode="numeric" data-currency="true" id="b_pull3" value="20000" /><span class="pull-out" id="b_buy3">$0</span></div>
+          </div>
         </div>
 
         <div class="s8-block">
-          <h3>Loan Calculator</h3>
-          <div class="row" style="grid-template-columns: 1fr 130px;"><label>As-Is Value</label><input type="text" inputmode="numeric" data-currency="true" id="d_asIs" value="120000" /></div>
-          <div class="row" style="grid-template-columns: 1fr 130px;"><label>LTV</label><div class="pct-input-wrap"><input type="number" id="d_ltv" value="80" step="1" /></div></div>
-          <div class="ltv-breakdown">
-            <div class="ltv-line down"><span class="ltv-label">Down</span><span class="ltv-value" id="d_downPmt">$0</span></div>
-            <div class="ltv-line loan"><span class="ltv-label">Loan</span><span class="ltv-value" id="d_loanAmt">$0</span></div>
+          <h3 style="color: var(--purple);">Mortgage Payment</h3>
+          <div class="row" style="grid-template-columns: 1fr 130px;">
+            <label>Loan Amount</label>
+            <span class="tier-seg loan-seg" id="l_modeSeg">
+              <input type="radio" name="l_mode" id="l_modeBrrrr" value="brrrr" checked />
+              <label for="l_modeBrrrr">BRRRR</label>
+              <input type="radio" name="l_mode" id="l_modeManual" value="manual" />
+              <label for="l_modeManual">Manual</label>
+            </span>
           </div>
-          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Rate</label><div class="pct-input-wrap"><input type="number" id="d_rate" value="7.5" step="0.125" /></div></div>
+          <div class="mode-brrrr">
+            <div class="row" style="grid-template-columns: 1fr 130px;"><label>Max Loan from BRRRR</label><div class="calc-out" id="l_brrrrLoan">$0</div></div>
+            <div class="mode-hint" id="l_brrrrHint">ARV × (1 − refi down payment)</div>
+          </div>
+          <div class="mode-manual" hidden>
+            <div class="row" style="grid-template-columns: 1fr 130px;"><label>Loan Amount</label><input type="text" inputmode="numeric" data-currency="true" id="l_manualLoan" value="96000" /></div>
+            <div class="row" style="grid-template-columns: 1fr 130px;"><label>Cash Invested</label><input type="text" inputmode="numeric" data-currency="true" id="l_cashIn" value="24000" /></div>
+          </div>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Rate / APR</label><div class="pct-input-wrap"><input type="number" id="d_rate" value="7.5" step="0.125" /></div></div>
           <div class="row" style="grid-template-columns: 1fr 130px;"><label>Term (years)</label><input type="number" id="d_term" value="30" /></div>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Property Tax (annual)</label><input type="text" inputmode="numeric" data-currency="true" id="e_tax" value="2000" /></div>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Insurance (annual)</label><input type="text" inputmode="numeric" data-currency="true" id="e_ins" value="1500" /></div>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>HOA (monthly)</label><input type="text" inputmode="numeric" data-currency="true" id="e_hoa" value="0" /></div>
 
           <div class="s8-output">
-            <div class="big" id="d_pi">$0</div>
-            <div class="sub">Monthly P&amp;I</div>
+            <div class="big" id="l_payment">$0</div>
+            <div class="sub">Monthly Payment · P&amp;I <span id="d_pi" style="color: var(--text); font-weight: 800;">$0</span> · Tax <span id="l_taxM" style="color: var(--text); font-weight: 800;">$0</span> · Ins <span id="l_insM" style="color: var(--text); font-weight: 800;">$0</span></div>
           </div>
         </div>
 
         <div class="s8-block">
           <h3>Cashflow &amp; Returns</h3>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Monthly Rent</label><input type="text" inputmode="numeric" data-currency="true" id="cf_rent" value="1100" /></div>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Monthly Payment</label><div class="calc-out" id="cf_paymentMirror">$0</div></div>
           <div class="row" style="grid-template-columns: 1fr 130px;">
-            <label>Monthly Rent</label>
-            <div class="auto-field" id="cf_rentMirrorWrap">
-              <input type="text" inputmode="numeric" data-currency="true" data-auto="rentmirror" id="cf_rentMirror" />
-              <button type="button" class="revert-btn" data-revert="cf_rentMirror" title="Revert to the rent from the Rent Calculator">⟲</button>
-            </div>
+            <label class="with-mini">
+              Prop. Mgmt
+              <span class="mini-pct">
+                <input type="text" inputmode="decimal" id="e_pm" value="10" />
+                <span class="pct-sign">%</span>
+              </span>
+            </label>
+            <div class="calc-out" id="cf_pm">$0</div>
           </div>
-          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Monthly P&amp;I</label><div class="calc-out" id="cf_piMirror">$0</div></div>
-          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Property Tax (annual)</label><input type="text" inputmode="numeric" data-currency="true" id="e_tax" value="2000" /></div>
-          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Insurance (annual)</label><input type="text" inputmode="numeric" data-currency="true" id="e_ins" value="1500" /></div>
-          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Property Mgmt %</label><input type="number" id="e_pm" value="10" step="0.5" /></div>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Utilities / Maintenance</label><input type="text" inputmode="numeric" data-currency="true" id="e_util" value="200" /></div>
 
           <div class="s8-output">
             <div class="big" id="cf_monthly">$0</div>
@@ -606,67 +766,36 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
           </div>
           <div class="s8-output" style="margin-top: 10px;">
             <div class="big" id="cf_coc" style="font-size: 22px;">—</div>
-            <div class="sub">Cash on Cash Return · Down <span id="cf_cocDown" style="color: var(--text); font-weight: 800;">$0</span></div>
+            <div class="sub" id="cf_cocSub">Cash on Cash Return</div>
           </div>
           <div id="cf_verdict"></div>
+          <a class="ext-link" href="https://www.zillow.com/rental-manager/price-my-rental/" target="_blank" rel="noopener noreferrer">
+            <span class="ext-link-label"><span class="ext-link-icon">🏘</span>Zillow Rent Estimate</span>
+            <span class="ext-link-arrow">↗</span>
+          </a>
         </div>
 
       </div>
     </div>
   </div>
+  </section>
+
 
   <div class="bottom-note">
     <strong>Notes:</strong>
     All calculations live — change any value and downstream numbers recalc instantly.
-    The Cash side "Need Deal At" preserves the Excel formula: ARV − Reno − Flipper Profit − Title − Commissions − HM Fees − Assignment Fee.
-    DSCR ratio = Monthly Rent ÷ (P&amp;I + Tax + Insurance). Most lenders require ≥ 1.20x.
+    The Wholesale "Need Deal At" preserves the Excel formula: ARV − Reno − Flipper Profit − Title − Commissions − HM Fees − Assignment Fee.
+    DSCR ratio = Monthly Rent ÷ (P&amp;I + Tax + Insurance + HOA). Most lenders require ≥ 1.20x.
+    Flip Max Purchase = ARV − Profit Target − Renovations − Agent Fees − Buyer Repairs − Concessions − Closing − Holding.
+    The Renovation Estimator is shared by both tabs; tick "Auto" on any Renovations line to pull its total.
+    BRRRR Max Purchase = ARV × (1 − Down Payment %) − Lending Fees − Renovations; each "Need to Buy For" subtracts the cash you want to pull out at refi.
+    Mortgage Payment = P&amp;I + Taxes/12 + Insurance/12 + HOA, on the BRRRR Max Loan or a manual loan amount. Net Cash Flow = Rent − Mortgage Payment − Prop. Mgmt − Utilities/Maintenance.
     Press <kbd>Ctrl/Cmd + P</kbd> or click <strong>Print / PDF</strong> for a clean export for sellers or partners.
-    Section 8 rent table reflects CMHA FY2026 Payment Standards (effective 1/1/2026). Update <code>CMHA_TIER_FY2026</code> when the next standards drop.
   </div>
 
 </div>
 
 <script>
-// ============================================================
-// CMHA Payment Standards — FY2026 (effective 1/1/2026)
-// Source: https://apps.cmha.net/rentdetermination/
-//
-// CMHA uses tiered payment standards by zip code. The table below
-// represents the standard tier covering all 53 zips in CMHA's
-// service area. Higher-opportunity suburbs *may* be tiered higher;
-// always cross-reference at apps.cmha.net for borderline deals.
-//
-// To update for FY2027: replace the values in CMHA_TIER_FY2026 with
-// the new amounts and every zip will pick them up automatically.
-// ============================================================
-const CMHA_TIER_FY2026 = {
-  "0": 881,   // Studio
-  "1": 1005,  // 1 BR
-  "2": 1209,  // 2 BR
-  "3": 1559,  // 3 BR
-  "4": 1661,  // 4 BR
-  "5": 1910,  // 5 BR
-  "6": 2159,  // 6 BR
-  "7": 2408,  // 7 BR
-  "8": 2816,  // 8 BR
-  "9": 2906   // 9 BR
-};
-
-// All 53 CMHA-serviced zip codes in Cuyahoga County
-const CMHA_ZIPS = [
-  "44017","44022","44040","44070","44101","44102","44103","44104","44105",
-  "44106","44107","44108","44109","44110","44111","44112","44113","44114",
-  "44115","44116","44117","44118","44119","44120","44121","44122","44123",
-  "44124","44125","44126","44127","44128","44129","44130","44131","44132",
-  "44133","44134","44135","44136","44137","44138","44139","44140","44141",
-  "44142","44143","44144","44145","44146","44147","44149","44181"
-];
-
-// Build the lookup: every zip points to the same FY2026 tier
-const S8_DATA = {
-  CMHA: Object.fromEntries(CMHA_ZIPS.map(zip => [zip, CMHA_TIER_FY2026]))
-};
-
 const $ = id => document.getElementById(id);
 const num = id => {
   // Strip $, commas, and whitespace so currency-formatted inputs parse correctly
@@ -782,6 +911,8 @@ function recalc() {
 
   const totalReno = effCosm + effWin + effRoof + effPl + effEl + effHvac;
   $('r_total').textContent = fmt(totalReno);
+  $('r_tierDisp').textContent = { rental: 'Rental', flip: 'Flip', luxury: 'Luxury' }[currentTier()] || 'Flip';
+  $('r_sqftDisp').textContent = sqft.toLocaleString('en-US');
 
   // Auto-sync reno total into Cash Deal renovations if toggle is on
   const syncOn = $('syncReno').checked;
@@ -794,6 +925,32 @@ function recalc() {
     cRenoInput.classList.remove('synced');
     cRenoInput.removeAttribute('readonly');
   }
+
+  // Same auto-sync for the 1HO tab's Flip and BRRRR Renovations (off by default)
+  const syncInto = (checkboxId, inputId) => {
+    const el = $(inputId);
+    if ($(checkboxId).checked) {
+      el.value = '$' + Math.round(totalReno).toLocaleString('en-US');
+      el.classList.add('synced');
+      el.setAttribute('readonly', 'readonly');
+    } else {
+      el.classList.remove('synced');
+      el.removeAttribute('readonly');
+    }
+  };
+  syncInto('f_syncReno', 'f_reno');
+  syncInto('b_syncReno', 'b_reno');
+
+  // --- 1b. FLIP (1HO tab, from BRRRR 2.0 sheet "Flip" column) ---
+  // Max Purchase = ARV − Profit Target − Reno − Agent Fees − Buyer Repairs − Concessions − Closing − Holding
+  const fArv = num('f_arv');
+  const fComm = fArv * (num('f_commPct') / 100);
+  const fCosts = num('f_reno') + fComm + num('f_repairs') + num('f_concess') + num('f_closing') + num('f_holding');
+  const fMax = fArv - num('f_profit') - fCosts;
+  $('f_commDollar').textContent = fmt(fComm);
+  $('f_maxPurchase').textContent = fmt(fMax);
+  $('f_profitDisp').textContent = fmt(num('f_profit'));
+  $('f_costs').textContent = fmt(fCosts);
 
   // --- 2. CASH DEAL (uses the synced reno value if toggle is on) ---
   const arv = num('c_arv'), reno = num('c_reno'), title = num('c_title');
@@ -825,7 +982,7 @@ function recalc() {
 
   const cashAssignFee = num('c_assign');
   const needAt = willSell - cashAssignFee;
-  const anchor = Math.max(0, needAt * 0.925);
+  const anchor = Math.max(0, needAt * 0.85);
 
   $('c_commDollar').textContent = fmt(commDol);
   $('c_hmFees').textContent = fmt(hmTotalFees);   // Single source of truth: matches Hard Money panel
@@ -850,68 +1007,68 @@ function recalc() {
   $('hm_origDollar').textContent = fmt(hmOrigDollar);
   $('hm_allIn').textContent = fmt(hmTotalFees);
 
-  const authority = $('s8_authority').value;
-  const zip = $('s8_zip').value.trim();
-  const beds = $('s8_beds').value;
-  let s8Rent = 0, dataNote = '', rentSource = '—';
-  const manualRent = num('s8_manualRent');
 
-  if (manualRent > 0) {
-    // Manual Rent ALWAYS wins when filled in — overrides CMHA even if data exists
-    s8Rent = manualRent;
-    dataNote = '<strong>Mode:</strong> Manual rent override (' + fmt(manualRent) + '/mo). Clear the Manual Rent field to use the CMHA payment standard.';
-    rentSource = 'via Manual Entry';
-  } else if (authority === 'manual') {
-    // User picked Manual Override but left Manual Rent at 0
-    dataNote = '<strong>Mode:</strong> Manual rent override selected, but no rent entered.';
-    rentSource = 'no rent — enter Manual Rent';
-  } else if (S8_DATA[authority] && S8_DATA[authority][zip] && S8_DATA[authority][zip][beds] != null) {
-    s8Rent = S8_DATA[authority][zip][beds];
-    dataNote = '<strong>Source:</strong> CMHA FY2026 Payment Standards (eff. 1/1/2026) · zip ' + zip + ' · ' + beds + ' BR. <em>Cross-reference at apps.cmha.net for higher-tier opportunity-area suburbs.</em>';
-    rentSource = 'via CMHA · zip ' + zip + ' · ' + beds + ' BR';
-  } else {
-    dataNote = '<strong>No data</strong> for ' + authority + ' zip ' + zip + '. Enter a Manual Rent or change zip.';
-    rentSource = 'no data — enter Manual Rent';
-  }
-  $('s8_rent').textContent = fmt(s8Rent);
-  $('s8_rentSource').textContent = rentSource;
-  $('s8_dataNote').innerHTML = dataNote;
+  // --- BRRRR (from BRRRR 2.0 sheet) ---
+  // Max Loan = ARV × (1 − DP%) · Max Purchase = Max Loan − Lending Fees − Reno
+  // Need to Buy For = Max Purchase − Cash Pulled Out
+  const bArv = num('b_arv');
+  const bDpPct = num('b_dp') / 100;
+  const bMaxLoan = bArv * (1 - bDpPct);
+  const bMaxPurchase = bMaxLoan - num('b_fees') - num('b_reno');
+  $('b_maxLoan').textContent = fmt(bMaxLoan);
+  $('b_maxPurchase').textContent = fmt(bMaxPurchase);
+  $('b_maxPurchase').className = 'big ' + (bMaxPurchase < 0 ? 'red' : 'purple');
+  [1, 2, 3].forEach(i => {
+    const buy = bMaxPurchase - num('b_pull' + i);
+    $('b_buy' + i).textContent = fmt(buy);
+    $('b_buy' + i).className = 'pull-out' + (buy < 0 ? ' red' : '');
+  });
 
-  // As-Is Value: standalone editable input (decoupled from Novation), defaults to $120k.
-  const asIs = num('d_asIs');
-  const ltv = num('d_ltv') / 100;
-  const loanAmt = asIs * ltv;
-  const downPmt = asIs - loanAmt;       // the cash the buyer brings to closing
+  // --- MORTGAGE PAYMENT ---
+  // Loan Amount comes from the BRRRR Max Loan, or is typed in manually (toggle).
+  const loanMode = (document.querySelector('input[name="l_mode"]:checked') || {}).value || 'brrrr';
+  const fromBrrrr = loanMode === 'brrrr';
+  document.querySelector('.mode-brrrr').hidden = !fromBrrrr;
+  document.querySelector('.mode-manual').hidden = fromBrrrr;
+  $('l_brrrrLoan').textContent = fmt(bMaxLoan);
+  $('l_brrrrHint').textContent = 'ARV ' + fmt(bArv) + ' × ' + +(100 - bDpPct * 100).toFixed(2) + '% (set in BRRRR)';
+  const loanAmt = fromBrrrr ? bMaxLoan : num('l_manualLoan');
   const rate = num('d_rate');
   const term = num('d_term');
-  const pi = monthlyPI(loanAmt, rate, term);
-  $('d_downPmt').textContent = fmt(downPmt);
-  $('d_loanAmt').textContent = fmt(loanAmt);
+  const pi = (rate > 0 && term > 0) ? monthlyPI(loanAmt, rate, term) : 0;
+  const taxM = num('e_tax') / 12, insM = num('e_ins') / 12, hoaM = num('e_hoa');
+  const payment = pi + taxM + insM + hoaM;          // PITI + HOA
   $('d_pi').textContent = fmt(pi);
+  $('l_taxM').textContent = fmt(taxM);
+  $('l_insM').textContent = fmt(insM);
+  $('l_payment').textContent = fmt(payment);
 
-  // Mirror Monthly P&I into Cashflow & Returns (read-only)
-  $('cf_piMirror').textContent = fmt(pi);
-
-  // Monthly Rent mirror — editable with revert button. If the user types over it,
-  // their value drives the cash flow calc. Click ⟲ to revert to the Rent Calculator value.
-  const effRent = applyEditable(s8Rent, 'cf_rentMirror');
-
-  const taxM = num('e_tax') / 12, insM = num('e_ins') / 12;
+  // --- CASHFLOW & RETURNS ---
+  const effRent = num('cf_rent');   // entered manually
   const pmM = effRent * (num('e_pm') / 100);
-  const netMonthly = effRent - pi - taxM - insM - pmM;
+  const netMonthly = effRent - payment - pmM - num('e_util');
   const netAnnual = netMonthly * 12;
-  const dscr = (pi + taxM + insM) > 0 ? effRent / (pi + taxM + insM) : 0;
+  const dscr = payment > 0 ? effRent / payment : 0;
 
-  // Cash on Cash Return: Annual Cash Flow ÷ Down Payment (the cash actually invested).
-  // Industry benchmark: 8-12% is solid, <6% is thin, >15% suggests value or higher risk.
-  const coc = downPmt > 0 ? (netAnnual / downPmt) * 100 : 0;
-
+  $('cf_paymentMirror').textContent = fmt(payment);
+  $('cf_pm').textContent = fmt(pmM);
   $('cf_monthly').textContent = fmt(netMonthly);
   $('cf_annual').textContent = fmt(netAnnual);
-  $('cf_coc').textContent = downPmt > 0 ? coc.toFixed(1) + '%' : '—';
-  $('cf_cocDown').textContent = fmt(downPmt);
   $('cf_monthly').className = 'big ' + (netMonthly > 0 ? 'teal' : netMonthly < 0 ? 'red' : '');
-  $('cf_coc').className = 'big ' + (coc > 0 ? 'teal' : coc < 0 ? 'red' : '');
+
+  // Second box: BRRRR → equity left at refi; Manual → Cash on Cash on the cash invested.
+  if (fromBrrrr) {
+    const equity = bArv - loanAmt;
+    $('cf_coc').textContent = fmt(equity);
+    $('cf_coc').className = 'big ' + (equity > 0 ? 'teal' : equity < 0 ? 'red' : '');
+    $('cf_cocSub').textContent = 'Equity at Refi · ARV − Loan';
+  } else {
+    const cashIn = num('l_cashIn');
+    const coc = cashIn > 0 ? (netAnnual / cashIn) * 100 : 0;
+    $('cf_coc').textContent = cashIn > 0 ? coc.toFixed(1) + '%' : '—';
+    $('cf_coc').className = 'big ' + (coc > 0 ? 'teal' : coc < 0 ? 'red' : '');
+    $('cf_cocSub').textContent = 'Cash on Cash Return · Cash Invested ' + fmt(cashIn);
+  }
 
   let verdictHTML = '';
   if (effRent === 0) {
@@ -920,7 +1077,7 @@ function recalc() {
     verdictHTML = '<div class="s8-warning red"><span class="icon">✗</span><span><strong>Negative cash flow.</strong> Property loses ' + fmt(Math.abs(netMonthly)) + '/mo at current terms.</span></div>';
   } else if (dscr < 1.20) {
     verdictHTML = '<div class="s8-warning amber"><span class="icon">⚠</span><span><strong>DSCR below 1.20x.</strong> Most lenders will decline. Need higher rent or lower loan.</span></div>';
-  } else if (dscr >= 1.20 && netMonthly < 100) {
+  } else if (netMonthly < 100) {
     verdictHTML = '<div class="s8-warning amber"><span class="icon">⚠</span><span><strong>Thin margin.</strong> Qualifies for DSCR but minimal cushion.</span></div>';
   } else {
     verdictHTML = '<div class="s8-warning teal"><span class="icon">✓</span><span><strong>Qualifies.</strong> DSCR ' + fmt2(dscr) + 'x · ' + fmt(netMonthly) + '/mo net.</span></div>';
@@ -931,32 +1088,6 @@ function recalc() {
 function syncSqft() {
   const v = $('propSqft').value.trim();
   if (v && !isNaN(parseFloat(v))) $('r_sqft').value = parseFloat(v);
-  recalc();
-}
-
-// Sync the top-of-page "Beds" field into the Section 8 bedroom dropdown.
-// Free-text → integer 0..9, snapped to the closest valid dropdown option.
-function syncBeds() {
-  const v = $('propBeds').value.trim();
-  if (v === '') return;                       // blank → leave dropdown alone
-  const parsed = parseFloat(v);
-  if (isNaN(parsed)) return;                  // garbage like "three" → ignore
-  const clamped = Math.max(0, Math.min(9, Math.floor(parsed)));  // 0..9, round down
-  $('s8_beds').value = String(clamped);
-  recalc();
-}
-
-// Auto-extract 5-digit zip from the Property Address and push into the Rent
-// Calculator's zip field. Matches the LAST 5-digit run in the string so that
-// street numbers like "44102 Main St" don't get mistaken for the zip.
-// ZIP+4 ("44102-1234") is supported — we grab just the 5-digit prefix.
-function syncZip() {
-  const v = $('propAddress').value;
-  if (!v) return;                             // blank → leave zip alone
-  const matches = v.match(/\b\d{5}\b/g);      // all 5-digit runs on word boundaries
-  if (!matches || matches.length === 0) return;
-  const zip = matches[matches.length - 1];    // last match wins (the real zip)
-  $('s8_zip').value = zip;
   recalc();
 }
 
@@ -1014,10 +1145,6 @@ document.querySelectorAll('input, select').forEach(el => {
   el.addEventListener('change', recalc);
 });
 $('propSqft').addEventListener('change', syncSqft);
-$('propBeds').addEventListener('input', syncBeds);
-$('propBeds').addEventListener('change', syncBeds);
-$('propAddress').addEventListener('input', syncZip);
-$('propAddress').addEventListener('change', syncZip);
 
 function resetAll() {
   if (!confirm('Reset all values to defaults?')) return;
@@ -1105,6 +1232,41 @@ document.querySelectorAll('button[data-revert]').forEach(btn => {
     recalc();  // recalc will rewrite the formula value into the field
   });
 });
+
+// ============================================
+// TABS: OHO (Wholesale · Novation · Hard Money · Reno) and 1HO (Flip · BRRRR · Reno).
+// The Renovation Estimator is a single panel that moves into the active tab,
+// so its inputs and total are shared by both tabs.
+// ============================================
+const TABS = ['oho', '1ho'];
+const renoPanel = $('renoSlot-oho').querySelector('.panel');
+function showTab(name) {
+  if (!TABS.includes(name)) name = 'oho';
+  TABS.forEach(t => {
+    const on = t === name;
+    $('tab-' + t).hidden = !on;
+    $('tabBtn-' + t).setAttribute('aria-selected', on ? 'true' : 'false');
+    $('tabBtn-' + t).tabIndex = on ? 0 : -1;
+  });
+  $('renoSlot-' + name).appendChild(renoPanel);
+  try { localStorage.setItem('trapcalc_tab', name); } catch (e) {}
+  if (location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
+}
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => showTab(btn.dataset.tab));
+  btn.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    const next = TABS[(TABS.indexOf(btn.dataset.tab) + 1) % TABS.length];
+    showTab(next);
+    $('tabBtn-' + next).focus();
+  });
+});
+window.addEventListener('hashchange', () => showTab(location.hash.slice(1)));
+let startTab = location.hash.slice(1);
+if (!TABS.includes(startTab)) {
+  try { startTab = localStorage.getItem('trapcalc_tab'); } catch (e) { startTab = null; }
+}
+showTab(startTab || 'oho');
 
 recalc();
 </script>
