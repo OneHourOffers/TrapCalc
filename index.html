@@ -658,8 +658,8 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
         </div>
         <div class="row"><label>Buyer Repairs</label><input type="text" inputmode="numeric" data-currency="true" id="f_repairs" value="5000" /></div>
         <div class="row"><label>Concessions</label><input type="text" inputmode="numeric" data-currency="true" id="f_concess" value="5000" /></div>
-        <div class="row"><label>Closing Costs</label><input type="text" inputmode="numeric" data-currency="true" id="f_closing" value="5000" /></div>
-        <div class="row"><label>Holding Costs</label><input type="text" inputmode="numeric" data-currency="true" id="f_holding" value="10000" /></div>
+        <div class="row"><label>Title Fees</label><input type="text" inputmode="numeric" data-currency="true" id="f_closing" value="7500" /></div>
+        <div class="row"><label>Hard Money Fees</label><div class="calc-out" id="f_hmFees">$0</div></div>
 
         <div class="hero-result orange-variant">
           <div class="hero-label">Max Purchase</div>
@@ -786,7 +786,7 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
     All calculations live — change any value and downstream numbers recalc instantly.
     The Wholesale "Need Deal At" preserves the Excel formula: ARV − Reno − Flipper Profit − Title − Commissions − HM Fees − Assignment Fee.
     DSCR ratio = Monthly Rent ÷ (P&amp;I + Tax + Insurance + HOA). Most lenders require ≥ 1.20x.
-    Flip Max Purchase = ARV − Profit Target − Renovations − Agent Fees − Buyer Repairs − Concessions − Closing − Holding.
+    Flip Max Purchase = ARV − Profit Target − Renovations − Agent Fees − Buyer Repairs − Concessions − Title Fees − Hard Money Fees. Hard Money Fees on both Wholesale and Flip come from the Hard Money Terms panel (OHO tab).
     The Renovation Estimator is shared by both tabs; tick "Auto" on any Renovations line to pull its total.
     BRRRR Max Purchase = ARV × (1 − Down Payment %) − Lending Fees − Renovations; each "Need to Buy For" subtracts the cash you want to pull out at refi.
     Mortgage Payment = P&amp;I + Taxes/12 + Insurance/12 + HOA, on the BRRRR Max Loan or a manual loan amount. Net Cash Flow = Rent − Mortgage Payment − Prop. Mgmt − Utilities/Maintenance.
@@ -942,11 +942,23 @@ function recalc() {
   syncInto('b_syncReno', 'b_reno');
 
   // --- 1b. FLIP (1HO tab, from BRRRR 2.0 sheet "Flip" column) ---
-  // Max Purchase = ARV − Profit Target − Reno − Agent Fees − Buyer Repairs − Concessions − Closing − Holding
+  // Max Purchase = ARV − Profit Target − Reno − Agent Fees − Buyer Repairs − Concessions − Closing − Hard Money Fees
+  // Hard Money Fees use the same Hard Money Terms and the same loan model as Wholesale:
+  // Loan = 90% × (Purchase + Reno); Fees = interest over months held + origination.
+  // Purchase depends on the fees, so resolve iteratively (same as Wholesale).
   const fArv = num('f_arv');
+  const fReno = num('f_reno');
   const fComm = fArv * (num('f_commPct') / 100);
-  const fCosts = num('f_reno') + fComm + num('f_repairs') + num('f_concess') + num('f_closing') + num('f_holding');
-  const fMax = fArv - num('f_profit') - fCosts;
+  const fHmRate = num('hm_rate') / 100, fHmMonths = num('hm_months'), fHmOrigPct = num('hm_orig') / 100;
+  const fBase = fArv - num('f_profit') - fReno - fComm - num('f_repairs') - num('f_concess') - num('f_closing');
+  let fMax = fBase, fHmFees = 0;
+  for (let i = 0; i < 5; i++) {
+    const fLoan = 0.9 * (fMax + fReno);
+    fHmFees = (fLoan * fHmRate / 12) * fHmMonths + fLoan * fHmOrigPct;
+    fMax = fBase - fHmFees;
+  }
+  const fCosts = fReno + fComm + num('f_repairs') + num('f_concess') + num('f_closing') + fHmFees;
+  $('f_hmFees').textContent = fmt(fHmFees);
   $('f_commDollar').textContent = fmt(fComm);
   $('f_maxPurchase').textContent = fmt(fMax);
   $('f_profitDisp').textContent = fmt(num('f_profit'));
