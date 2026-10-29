@@ -592,15 +592,15 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
         <h2>Hard Money Terms</h2>
         <div class="panel-head-controls">
           <button type="button" class="hm-control" onclick="resetHardMoney()" title="Restore defaults: 12% rate, 6 months, 2% origination">↻ Reset</button>
-          <button type="button" class="hm-control locked" id="hmLockBtn" onclick="toggleHardMoneyLock()">🔒 OHO-Approved</button>
+          <button type="button" class="hm-control hm-lock-btn locked" id="hmLockBtn" onclick="toggleHardMoneyLock()">🔒 OHO-Approved</button>
         </div>
       </div>
       <div class="panel-body">
         <div class="row"><label>Loan Amount</label><div class="calc-out" id="hm_loan">$0</div></div>
-        <div class="row"><label>Rate (%)</label><input type="number" id="hm_rate" value="12" step="0.1" /></div>
+        <div class="row"><label>Rate (%)</label><input type="number" id="hm_rate" class="hm-term" data-term="rate" value="12" step="0.1" /></div>
         <div class="row"><label>Monthly Interest</label><div class="calc-out" id="hm_monthly">$0</div></div>
-        <div class="row"><label>Months Held</label><input type="number" id="hm_months" value="6" /></div>
-        <div class="row"><label>Origination (%)</label><input type="number" id="hm_orig" value="2" step="0.5" /></div>
+        <div class="row"><label>Months Held</label><input type="number" id="hm_months" class="hm-term" data-term="months" value="6" /></div>
+        <div class="row"><label>Origination (%)</label><input type="number" id="hm_orig" class="hm-term" data-term="orig" value="2" step="0.5" /></div>
         <div class="row"><label>Origination $</label><div class="calc-out" id="hm_origDollar">$0</div></div>
 
         <div class="allin-total">
@@ -674,6 +674,51 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
 
     <div class="reno-slot" id="renoSlot-1ho"></div>
 
+  </div>
+
+  <div class="panel full-panel" style="margin-bottom: 22px;">
+    <div class="panel-head">
+      <h2>Hard Money Terms</h2>
+      <div class="panel-head-controls">
+        <span class="tag" style="margin-right: 4px;">Synced with OHO</span>
+        <button type="button" class="hm-control" onclick="resetHardMoney()" title="Restore defaults: 12% rate, 6 months, 2% origination">↻ Reset</button>
+        <button type="button" class="hm-control hm-lock-btn locked" onclick="toggleHardMoneyLock()">🔒 OHO-Approved</button>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="quad-grid">
+
+        <div class="s8-block">
+          <h3>Terms</h3>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Rate (%)</label><input type="number" id="fhm_rate" class="hm-term" data-term="rate" value="12" step="0.1" /></div>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Months Held</label><input type="number" id="fhm_months" class="hm-term" data-term="months" value="6" /></div>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Origination (%)</label><input type="number" id="fhm_orig" class="hm-term" data-term="orig" value="2" step="0.5" /></div>
+        </div>
+
+        <div class="s8-block">
+          <h3>Loan</h3>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Loan Amount</label><div class="calc-out" id="fhm_loan">$0</div></div>
+          <div class="mode-hint">90% × (Max Purchase + Renovations)</div>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Monthly Interest</label><div class="calc-out" id="fhm_monthly">$0</div></div>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Origination $</label><div class="calc-out" id="fhm_origDollar">$0</div></div>
+        </div>
+
+        <div class="s8-block">
+          <h3>Total</h3>
+          <div class="allin-total" style="margin-top: 4px;">
+            <div class="lbl">Total Hard Money Fees</div>
+            <div class="val" id="fhm_allIn">$0</div>
+          </div>
+          <div class="footnote" style="margin-top: 12px;">Interest <strong id="fhm_interest" style="display:inline">$0</strong> + Origination <strong id="fhm_origDollar2" style="display:inline">$0</strong>. Feeds the Hard Money Fees line on Flip.</div>
+        </div>
+
+      </div>
+
+      <div class="hm-disclaimer">
+        <strong>⚠ Unlocked — Custom Terms</strong>
+        You've overridden the OHO-approved hard money terms. The defaults (12% rate, 6 months held, 2% origination on 90% LTV) reflect terms negotiated with our preferred capital partners. Custom values may not reflect actual loan availability. Click <strong style="display:inline; margin:0; font-size:inherit;">🔒 OHO-Approved</strong> to restore and re-lock, or <strong style="display:inline; margin:0; font-size:inherit;">↻ Reset</strong> to wipe back to defaults.
+      </div>
+    </div>
   </div>
 
   <div class="panel full-panel">
@@ -951,12 +996,19 @@ function recalc() {
   const fComm = fArv * (num('f_commPct') / 100);
   const fHmRate = num('hm_rate') / 100, fHmMonths = num('hm_months'), fHmOrigPct = num('hm_orig') / 100;
   const fBase = fArv - num('f_profit') - fReno - fComm - num('f_repairs') - num('f_concess') - num('f_closing');
-  let fMax = fBase, fHmFees = 0;
+  let fMax = fBase, fHmFees = 0, fLoan = 0;
   for (let i = 0; i < 5; i++) {
-    const fLoan = 0.9 * (fMax + fReno);
+    fLoan = 0.9 * (fMax + fReno);
     fHmFees = (fLoan * fHmRate / 12) * fHmMonths + fLoan * fHmOrigPct;
     fMax = fBase - fHmFees;
   }
+  const fHmMonthly = fLoan * fHmRate / 12, fHmOrigDollar = fLoan * fHmOrigPct;
+  $('fhm_loan').textContent = fmt(fLoan);
+  $('fhm_monthly').textContent = fmt(fHmMonthly);
+  $('fhm_origDollar').textContent = fmt(fHmOrigDollar);
+  $('fhm_origDollar2').textContent = fmt(fHmOrigDollar);
+  $('fhm_interest').textContent = fmt(fHmMonthly * fHmMonths);
+  $('fhm_allIn').textContent = fmt(fHmFees);
   const fCosts = fReno + fComm + num('f_repairs') + num('f_concess') + num('f_closing') + fHmFees;
   $('f_hmFees').textContent = fmt(fHmFees);
   $('f_commDollar').textContent = fmt(fComm);
@@ -1170,9 +1222,22 @@ function resetAll() {
 const HM_DEFAULTS = { rate: 12, months: 6, orig: 2 };
 let hmUnlocked = false;
 
+// The terms appear on both tabs (OHO: hm_*, 1HO: fhm_*). Every copy carries
+// class "hm-term" + data-term; editing one writes the value into the others.
+function setHardMoneyTerms(t) {
+  document.querySelectorAll('.hm-term').forEach(el => { el.value = t[el.dataset.term]; });
+}
+function syncHardMoneyTerm(el) {
+  document.querySelectorAll('.hm-term[data-term="' + el.dataset.term + '"]').forEach(o => { if (o !== el) o.value = el.value; });
+}
+// Capture phase on the document runs before each input's own recalc listener,
+// so recalc always sees the synced value no matter which tab was edited.
+['input', 'change'].forEach(type => document.addEventListener(type, e => {
+  if (e.target.classList && e.target.classList.contains('hm-term')) syncHardMoneyTerm(e.target);
+}, true));
+
 function applyHardMoneyLockState() {
-  ['hm_rate', 'hm_months', 'hm_orig'].forEach(id => {
-    const el = $(id);
+  document.querySelectorAll('.hm-term').forEach(el => {
     if (hmUnlocked) {
       el.removeAttribute('disabled');
       el.classList.remove('hm-locked');
@@ -1181,19 +1246,12 @@ function applyHardMoneyLockState() {
       el.classList.add('hm-locked');
     }
   });
-  const btn = $('hmLockBtn');
-  const disclaimer = $('hmDisclaimer');
-  if (hmUnlocked) {
-    btn.textContent = '🔓 Unlocked — Click to re-lock';
-    btn.classList.remove('locked');
-    btn.classList.add('unlocked');
-    disclaimer.classList.add('is-visible');
-  } else {
-    btn.textContent = '🔒 OHO-Approved';
-    btn.classList.remove('unlocked');
-    btn.classList.add('locked');
-    disclaimer.classList.remove('is-visible');
-  }
+  document.querySelectorAll('.hm-lock-btn').forEach(btn => {
+    btn.textContent = hmUnlocked ? '🔓 Unlocked — Click to re-lock' : '🔒 OHO-Approved';
+    btn.classList.toggle('locked', !hmUnlocked);
+    btn.classList.toggle('unlocked', hmUnlocked);
+  });
+  document.querySelectorAll('.hm-disclaimer').forEach(d => d.classList.toggle('is-visible', hmUnlocked));
 }
 
 function toggleHardMoneyLock() {
@@ -1208,9 +1266,7 @@ function toggleHardMoneyLock() {
     hmUnlocked = true;
   } else {
     // Re-lock — restore defaults silently to keep math consistent with OHO terms
-    $('hm_rate').value = HM_DEFAULTS.rate;
-    $('hm_months').value = HM_DEFAULTS.months;
-    $('hm_orig').value = HM_DEFAULTS.orig;
+    setHardMoneyTerms(HM_DEFAULTS);
     hmUnlocked = false;
   }
   applyHardMoneyLockState();
@@ -1218,9 +1274,7 @@ function toggleHardMoneyLock() {
 }
 
 function resetHardMoney() {
-  $('hm_rate').value = HM_DEFAULTS.rate;
-  $('hm_months').value = HM_DEFAULTS.months;
-  $('hm_orig').value = HM_DEFAULTS.orig;
+  setHardMoneyTerms(HM_DEFAULTS);
   recalc();
 }
 
