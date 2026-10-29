@@ -136,17 +136,6 @@ button.action.primary:hover { background: #16334f; border-color: #16334f; }
 .panel-head-controls { display: flex; align-items: center; gap: 8px; }
 .panel-head-controls .hm-control { font-family: "Archivo", sans-serif; font-size: 11px; font-weight: 600; padding: 5px 10px; background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; letter-spacing: 0.02em; }
 .panel-head-controls .hm-control:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.4); }
-.panel-head-controls .hm-control.locked { background: rgba(45,138,110,0.35); border-color: rgba(45,138,110,0.6); }
-.panel-head-controls .hm-control.unlocked { background: rgba(217,96,26,0.45); border-color: rgba(217,96,26,0.7); }
-
-/* Disabled state for locked hard money inputs */
-.row input.hm-locked { background: var(--surface2) !important; color: var(--text-muted) !important; cursor: not-allowed; border-color: var(--border) !important; opacity: 0.7; }
-.row input.hm-locked:focus { box-shadow: none !important; border-color: var(--border) !important; }
-
-/* OHO-Approved disclaimer banner (shows when unlocked) */
-.hm-disclaimer { display: none; margin-top: 14px; padding: 12px 14px; background: var(--orange-dim); border: 1px solid rgba(217,96,26,0.3); border-left: 3px solid var(--orange); border-radius: 8px; font-size: 11.5px; line-height: 1.55; color: var(--text-sec); }
-.hm-disclaimer.is-visible { display: block; }
-.hm-disclaimer strong { color: var(--orange); font-family: "Archivo", sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; font-size: 10.5px; display: block; margin-bottom: 4px; }
 
 /* ============ DUAL GRID ============ */
 .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -431,7 +420,15 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
             <button type="button" class="revert-btn" data-revert="c_profit" title="Revert to ½ of Renovations">⟲</button>
           </div>
         </div>
-        <div class="row"><label>Hard Money Fees</label><div class="calc-out" id="c_hmFees">$0</div></div>
+        <div class="row">
+          <div class="sync-inline">Hard Money Fees
+            <label class="sync-chip" for="c_syncHm" title="When checked, Hard Money Fees is pulled from the Hard Money Estimator total">
+              <input type="checkbox" id="c_syncHm" checked />
+              Auto from Estimator
+            </label>
+          </div>
+          <input type="text" inputmode="numeric" data-currency="true" id="c_hmFees" value="0" />
+        </div>
         <div class="row"><label>Title Fees</label><input type="text" inputmode="numeric" data-currency="true" id="c_title" value="7500" /></div>
         <div class="row">
           <label class="with-mini">
@@ -589,10 +586,9 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
 
     <div class="panel">
       <div class="panel-head">
-        <h2>Hard Money Terms</h2>
+        <h2>Hard Money Estimator</h2>
         <div class="panel-head-controls">
           <button type="button" class="hm-control" onclick="resetHardMoney()" title="Restore defaults: 12% rate, 6 months, 2% origination">↻ Reset</button>
-          <button type="button" class="hm-control hm-lock-btn locked" id="hmLockBtn" onclick="toggleHardMoneyLock()">🔒 OHO-Approved</button>
         </div>
       </div>
       <div class="panel-body">
@@ -608,10 +604,6 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
           <div class="val" id="hm_allIn">$0</div>
         </div>
 
-        <div class="hm-disclaimer" id="hmDisclaimer">
-          <strong>⚠ Unlocked — Custom Terms</strong>
-          You've overridden the OHO-approved hard money terms. The defaults (12% rate, 6 months held, 2% origination on 90% LTV) reflect terms negotiated with our preferred capital partners. Custom values may not reflect actual loan availability. Click <strong style="display:inline; margin:0; font-size:inherit;">🔒 OHO-Approved</strong> to restore and re-lock, or <strong style="display:inline; margin:0; font-size:inherit;">↻ Reset</strong> to wipe back to defaults.
-        </div>
 
         <div class="footnote" style="margin-top: 14px;">
           <strong>Reno Logic:</strong> Cosmetic = base + $/sqft (1,001–2,500) + $/sqft (&gt;2,500) — Rental $20k / $10 / $15 · Flip $30k / $13 / $20 · Luxury $40k / $20 / $30 ·
@@ -659,7 +651,15 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
         <div class="row"><label>Buyer Repairs</label><input type="text" inputmode="numeric" data-currency="true" id="f_repairs" value="5000" /></div>
         <div class="row"><label>Concessions</label><input type="text" inputmode="numeric" data-currency="true" id="f_concess" value="5000" /></div>
         <div class="row"><label>Title Fees</label><input type="text" inputmode="numeric" data-currency="true" id="f_closing" value="7500" /></div>
-        <div class="row"><label>Hard Money Fees</label><div class="calc-out" id="f_hmFees">$0</div></div>
+        <div class="row">
+          <div class="sync-inline">Hard Money Fees
+            <label class="sync-chip" for="f_syncHm" title="When checked, Hard Money Fees is pulled from the Hard Money Estimator total">
+              <input type="checkbox" id="f_syncHm" checked />
+              Auto from Estimator
+            </label>
+          </div>
+          <input type="text" inputmode="numeric" data-currency="true" id="f_hmFees" value="0" />
+        </div>
 
         <div class="hero-result orange-variant">
           <div class="hero-label">Max Purchase</div>
@@ -678,11 +678,10 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
 
   <div class="panel full-panel" style="margin-bottom: 22px;">
     <div class="panel-head">
-      <h2>Hard Money Terms</h2>
+      <h2>Hard Money Estimator</h2>
       <div class="panel-head-controls">
         <span class="tag" style="margin-right: 4px;">Synced with OHO</span>
         <button type="button" class="hm-control" onclick="resetHardMoney()" title="Restore defaults: 12% rate, 6 months, 2% origination">↻ Reset</button>
-        <button type="button" class="hm-control hm-lock-btn locked" onclick="toggleHardMoneyLock()">🔒 OHO-Approved</button>
       </div>
     </div>
     <div class="panel-body">
@@ -709,15 +708,11 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
             <div class="lbl">Total Hard Money Fees</div>
             <div class="val" id="fhm_allIn">$0</div>
           </div>
-          <div class="footnote" style="margin-top: 12px;">Interest <strong id="fhm_interest" style="display:inline">$0</strong> + Origination <strong id="fhm_origDollar2" style="display:inline">$0</strong>. Feeds the Hard Money Fees line on Flip.</div>
+          <div class="footnote" style="margin-top: 12px;">Interest <strong id="fhm_interest" style="display:inline">$0</strong> + Origination <strong id="fhm_origDollar2" style="display:inline">$0</strong>. Feeds Flip's Hard Money Fees line when "Auto from Estimator" is checked.</div>
         </div>
 
       </div>
 
-      <div class="hm-disclaimer">
-        <strong>⚠ Unlocked — Custom Terms</strong>
-        You've overridden the OHO-approved hard money terms. The defaults (12% rate, 6 months held, 2% origination on 90% LTV) reflect terms negotiated with our preferred capital partners. Custom values may not reflect actual loan availability. Click <strong style="display:inline; margin:0; font-size:inherit;">🔒 OHO-Approved</strong> to restore and re-lock, or <strong style="display:inline; margin:0; font-size:inherit;">↻ Reset</strong> to wipe back to defaults.
-      </div>
     </div>
   </div>
 
@@ -831,7 +826,7 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
     All calculations live — change any value and downstream numbers recalc instantly.
     The Wholesale "Need Deal At" preserves the Excel formula: ARV − Reno − Flipper Profit − Title − Commissions − HM Fees − Assignment Fee.
     DSCR ratio = Monthly Rent ÷ (P&amp;I + Tax + Insurance + HOA). Most lenders require ≥ 1.20x.
-    Flip Max Purchase = ARV − Profit Target − Renovations − Agent Fees − Buyer Repairs − Concessions − Title Fees − Hard Money Fees. Hard Money Fees on both Wholesale and Flip come from the Hard Money Terms panel (OHO tab).
+    Flip Max Purchase = ARV − Profit Target − Renovations − Agent Fees − Buyer Repairs − Concessions − Title Fees − Hard Money Fees. Hard Money Fees on Wholesale and Flip come from the Hard Money Estimator when "Auto from Estimator" is checked; uncheck to type your own.
     The Renovation Estimator is shared by both tabs; tick "Auto" on any Renovations line to pull its total.
     BRRRR Max Purchase = ARV × (1 − Down Payment %) − Lending Fees − Renovations; each "Need to Buy For" subtracts the cash you want to pull out at refi.
     Mortgage Payment = P&amp;I + Taxes/12 + Insurance/12 + HOA, on the BRRRR Max Loan or a manual loan amount. Net Cash Flow = Rent − Mortgage Payment − Prop. Mgmt − Utilities/Maintenance.
@@ -984,11 +979,26 @@ function recalc() {
     }
   };
   syncInto('f_syncReno', 'f_reno');
+
+  // Hard Money Fees lines: "Auto from Estimator" pulls the Hard Money Estimator total;
+  // unchecked, the typed amount is used instead. Returns the fee to use in the deal math.
+  const hmLine = (checkboxId, inputId, estimate) => {
+    const el = $(inputId);
+    if ($(checkboxId).checked) {
+      el.value = '$' + Math.round(estimate).toLocaleString('en-US');
+      el.classList.add('synced');
+      el.setAttribute('readonly', 'readonly');
+      return estimate;
+    }
+    el.classList.remove('synced');
+    el.removeAttribute('readonly');
+    return num(inputId);
+  };
   syncInto('b_syncReno', 'b_reno');
 
   // --- 1b. FLIP (1HO tab, from BRRRR 2.0 sheet "Flip" column) ---
   // Max Purchase = ARV − Profit Target − Reno − Agent Fees − Buyer Repairs − Concessions − Closing − Hard Money Fees
-  // Hard Money Fees use the same Hard Money Terms and the same loan model as Wholesale:
+  // Hard Money Fees use the same Hard Money Estimator terms and loan model as Wholesale:
   // Loan = 90% × (Purchase + Reno); Fees = interest over months held + origination.
   // Purchase depends on the fees, so resolve iteratively (same as Wholesale).
   const fArv = num('f_arv');
@@ -1003,14 +1013,16 @@ function recalc() {
     fMax = fBase - fHmFees;
   }
   const fHmMonthly = fLoan * fHmRate / 12, fHmOrigDollar = fLoan * fHmOrigPct;
+  const fHmEstimate = fHmFees;
+  fHmFees = hmLine('f_syncHm', 'f_hmFees', fHmEstimate);
+  if (fHmFees !== fHmEstimate) fMax = fBase - fHmFees;   // manual fee overrides the estimate
   $('fhm_loan').textContent = fmt(fLoan);
   $('fhm_monthly').textContent = fmt(fHmMonthly);
   $('fhm_origDollar').textContent = fmt(fHmOrigDollar);
   $('fhm_origDollar2').textContent = fmt(fHmOrigDollar);
   $('fhm_interest').textContent = fmt(fHmMonthly * fHmMonths);
-  $('fhm_allIn').textContent = fmt(fHmFees);
+  $('fhm_allIn').textContent = fmt(fHmEstimate);
   const fCosts = fReno + fComm + num('f_repairs') + num('f_concess') + num('f_closing') + fHmFees;
-  $('f_hmFees').textContent = fmt(fHmFees);
   $('f_commDollar').textContent = fmt(fComm);
   $('f_maxPurchase').textContent = fmt(fMax);
   $('f_profitDisp').textContent = fmt(num('f_profit'));
@@ -1044,12 +1056,15 @@ function recalc() {
     willSell = baseCost - hmTotalFees;             // refine Will Sell For
   }
 
+  const hmEstimate = hmTotalFees;
+  const cHmFees = hmLine('c_syncHm', 'c_hmFees', hmEstimate);
+  if (cHmFees !== hmEstimate) willSell = baseCost - cHmFees;   // manual fee overrides the estimate
+
   const cashAssignFee = num('c_assign');
   const needAt = willSell - cashAssignFee;
   const anchor = Math.max(0, needAt * 0.85);
 
   $('c_commDollar').textContent = fmt(commDol);
-  $('c_hmFees').textContent = fmt(hmTotalFees);   // Single source of truth: matches Hard Money panel
   $('c_needAt').textContent = fmt(needAt);
   $('c_willSell').textContent = fmt(willSell);
   $('c_anchor').textContent = fmt(anchor);
@@ -1216,11 +1231,10 @@ function resetAll() {
 }
 
 // ============================================
-// HARD MONEY TERMS: locked by default with OHO-approved values.
-// Senior ACQ can unlock to model alternative scenarios after acknowledging disclaimer.
+// HARD MONEY ESTIMATOR: default terms (12% rate, 6 months, 2% origination on 90% LTV).
+// Always editable; ↻ Reset restores the defaults on both tabs.
 // ============================================
 const HM_DEFAULTS = { rate: 12, months: 6, orig: 2 };
-let hmUnlocked = false;
 
 // The terms appear on both tabs (OHO: hm_*, 1HO: fhm_*). Every copy carries
 // class "hm-term" + data-term; editing one writes the value into the others.
@@ -1236,50 +1250,11 @@ function syncHardMoneyTerm(el) {
   if (e.target.classList && e.target.classList.contains('hm-term')) syncHardMoneyTerm(e.target);
 }, true));
 
-function applyHardMoneyLockState() {
-  document.querySelectorAll('.hm-term').forEach(el => {
-    if (hmUnlocked) {
-      el.removeAttribute('disabled');
-      el.classList.remove('hm-locked');
-    } else {
-      el.setAttribute('disabled', 'disabled');
-      el.classList.add('hm-locked');
-    }
-  });
-  document.querySelectorAll('.hm-lock-btn').forEach(btn => {
-    btn.textContent = hmUnlocked ? '🔓 Unlocked — Click to re-lock' : '🔒 OHO-Approved';
-    btn.classList.toggle('locked', !hmUnlocked);
-    btn.classList.toggle('unlocked', hmUnlocked);
-  });
-  document.querySelectorAll('.hm-disclaimer').forEach(d => d.classList.toggle('is-visible', hmUnlocked));
-}
-
-function toggleHardMoneyLock() {
-  if (!hmUnlocked) {
-    // First-time unlock — show disclaimer confirmation
-    const ok = confirm(
-      'These hard money terms are OHO-Approved defaults negotiated with our preferred capital partners.\n\n' +
-      'Unlocking lets you model alternative scenarios, but custom values may not reflect actual loan availability.\n\n' +
-      'Continue?'
-    );
-    if (!ok) return;
-    hmUnlocked = true;
-  } else {
-    // Re-lock — restore defaults silently to keep math consistent with OHO terms
-    setHardMoneyTerms(HM_DEFAULTS);
-    hmUnlocked = false;
-  }
-  applyHardMoneyLockState();
-  recalc();
-}
-
 function resetHardMoney() {
   setHardMoneyTerms(HM_DEFAULTS);
   recalc();
 }
 
-// Apply locked state on initial load
-applyHardMoneyLockState();
 
 // Auto-sync checkbox (on the Cash Deal Renovations line): recalc immediately on change
 // Also catch direct checkbox changes
