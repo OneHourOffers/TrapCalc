@@ -596,7 +596,7 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
         <div class="row"><label>Rate (%)</label><input type="number" id="hm_rate" class="hm-term" data-term="rate" value="12" step="0.1" /></div>
         <div class="row"><label>Monthly Interest</label><div class="calc-out" id="hm_monthly">$0</div></div>
         <div class="row"><label>Months Held</label><input type="number" id="hm_months" class="hm-term" data-term="months" value="6" /></div>
-        <div class="row"><label>Origination (%)</label><input type="number" id="hm_orig" class="hm-term" data-term="orig" value="2" step="0.5" /></div>
+        <div class="row"><label>Origination (%) · $3k min</label><input type="number" id="hm_orig" class="hm-term" data-term="orig" value="2" step="0.5" /></div>
         <div class="row"><label>Origination $</label><div class="calc-out" id="hm_origDollar">$0</div></div>
 
         <div class="allin-total">
@@ -691,7 +691,7 @@ kbd { font-family: "Archivo", sans-serif; font-weight: 700; font-size: 10px; bac
           <h3>Terms</h3>
           <div class="row" style="grid-template-columns: 1fr 130px;"><label>Rate (%)</label><input type="number" id="fhm_rate" class="hm-term" data-term="rate" value="12" step="0.1" /></div>
           <div class="row" style="grid-template-columns: 1fr 130px;"><label>Months Held</label><input type="number" id="fhm_months" class="hm-term" data-term="months" value="6" /></div>
-          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Origination (%)</label><input type="number" id="fhm_orig" class="hm-term" data-term="orig" value="2" step="0.5" /></div>
+          <div class="row" style="grid-template-columns: 1fr 130px;"><label>Origination (%) · $3k min</label><input type="number" id="fhm_orig" class="hm-term" data-term="orig" value="2" step="0.5" /></div>
         </div>
 
         <div class="s8-block">
@@ -996,6 +996,10 @@ function recalc() {
   };
   syncInto('b_syncReno', 'b_reno');
 
+  // Hard money origination: % of loan, never less than $3,000 (both tabs)
+  const HM_MIN_ORIG = 3000;
+  const hmOrig = (loan, pct) => loan > 0 ? Math.max(HM_MIN_ORIG, loan * pct) : 0;
+
   // --- 1b. FLIP (1HO tab, from BRRRR 2.0 sheet "Flip" column) ---
   // Max Purchase = ARV − Profit Target − Reno − Agent Fees − Buyer Repairs − Concessions − Closing − Hard Money Fees
   // Hard Money Fees use the same Hard Money Estimator terms and loan model as Wholesale:
@@ -1009,10 +1013,10 @@ function recalc() {
   let fMax = fBase, fHmFees = 0, fLoan = 0;
   for (let i = 0; i < 5; i++) {
     fLoan = 0.9 * (fMax + fReno);
-    fHmFees = (fLoan * fHmRate / 12) * fHmMonths + fLoan * fHmOrigPct;
+    fHmFees = (fLoan * fHmRate / 12) * fHmMonths + hmOrig(fLoan, fHmOrigPct);
     fMax = fBase - fHmFees;
   }
-  const fHmMonthly = fLoan * fHmRate / 12, fHmOrigDollar = fLoan * fHmOrigPct;
+  const fHmMonthly = fLoan * fHmRate / 12, fHmOrigDollar = hmOrig(fLoan, fHmOrigPct);
   const fHmEstimate = fHmFees;
   fHmFees = hmLine('f_syncHm', 'f_hmFees', fHmEstimate);
   if (fHmFees !== fHmEstimate) fMax = fBase - fHmFees;   // manual fee overrides the estimate
@@ -1051,7 +1055,7 @@ function recalc() {
     hmLoan = 0.9 * (willSell + reno);              // 90% of purchase price + reno
     hmMonthly = (hmLoan * hmRate) / 12;
     hmInterestFees = hmMonthly * hmMonths;
-    hmOrigDollar = hmLoan * hmOrigPct;
+    hmOrigDollar = hmOrig(hmLoan, hmOrigPct);
     hmTotalFees = hmInterestFees + hmOrigDollar;
     willSell = baseCost - hmTotalFees;             // refine Will Sell For
   }
